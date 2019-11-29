@@ -11,10 +11,10 @@ classifier_path = '../save/classifier.sav'
 window_size = window_size()
 step = (3, 4)
 scale = (0.15, 0.2)
+classifier_prob_threshold = 0.9
+iou_threshold = 0.2
 classifier = pickle.load(open(classifier_path, 'rb'))
 downsampling_filter = lambda img:ndimg.gaussian_filter(img, sigma = 1, mode = 'nearest', truncate = 3)
-
-iou_threshold = 0.2
 
 def intersection_over_union(loc1, loc2):
     def len2coord(loc):
@@ -76,7 +76,7 @@ def search(img, window_size = window_size, scale = scale, step = step, classifie
             for j in range(0, current_img.shape[1] - window_size[1], step[index]):
                 current_hog_descriptor = hog_descriptor(current_img[i:i + window_size[0], j:j + window_size[1]])
                 prob = classifier.predict_proba([current_hog_descriptor])[0]
-                if prob[1] > .9:
+                if prob[1] > classifier_prob_threshold:
                     valid_blocks.append((prob[1], round(i / scale[index]), round(j / scale[index]), round(window_size[0] / scale[index]), round(window_size[1] / scale[index])), )
                     
     non_maximum_suppression(valid_blocks)
