@@ -1,3 +1,4 @@
+import os
 import sys
 import pickle
 
@@ -16,9 +17,13 @@ test_pos_list = '../data/test/pos.lst'
 test_neg_list = '../data/test/neg.lst'
 classifier_path = '../save/classifier.sav'
 img_size = (60, 36)
-window_size = lambda :img_size # for external access
-classifier_constructor = lambda :svm.SVC(probability = True)
 downsampling_filter = lambda img:ndimg.gaussian_filter(img, sigma = 1, mode = 'nearest', truncate = 3)
+
+classifier_constructor = lambda :svm.SVC(probability = True) # 0.9110
+# classifier_constructor = lambda :tree.DecisionTreeClassifier() # 0.7767
+# classifier_constructor = lambda :neural_network.MLPClassifier(hidden_layer_sizes = (512, ), activation = 'relu', solver = 'sgd', batch_size = 32, learning_rate = 'constant', learning_rate_init = 0.001, max_iter = 20) # 0.9060
+
+window_size = lambda :img_size # for external access
 
 def print_flush(s):
     print(s)
@@ -48,7 +53,7 @@ def read_images(path_list):
         paths = lst.read().split("\n")
     while len(paths) > 0 and paths[-1] == '':
         paths.pop(-1)
-    img_list = [format_image(plt.imread("%s%s" % (data_path, path), 'jpg')) for path in paths]
+    img_list = [format_image(plt.imread(os.path.join(data_path, path), 'jpg')) for path in paths]
     return img_list
     
 if __name__ == '__main__':
@@ -58,7 +63,7 @@ if __name__ == '__main__':
     train_labels = [1 for i in range(len(train_pos_images))] + [0 for i in range(len(train_neg_images))]
 
     print_flush('Generating HoG descriptors for train images...')
-    train_hog_descriptors = [generate_hog(img) for img in train_images]
+    train_hog_descriptors = [hog_descriptor(img) for img in train_images]
 
     image_classifier = classifier_constructor()
 
@@ -71,7 +76,7 @@ if __name__ == '__main__':
     test_labels = [1 for i in range(len(test_pos_images))] + [0 for i in range(len(test_neg_images))]
 
     print_flush('Generating HoG descriptors for test images...')
-    test_hog_descriptors = [generate_hog(img) for img in test_images]
+    test_hog_descriptors = [hog_descriptor(img) for img in test_images]
 
     print_flush('Evaluating...')
     accuracy = image_classifier.score(test_hog_descriptors, test_labels)
