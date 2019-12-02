@@ -7,12 +7,11 @@ import matplotlib.pyplot as plt
 from train_classifier import window_size, hog_descriptor
 
 image_path = '../data/search_test.png'
-classifier_path = '../save/classifier.sav'
+classifier_path = '../save/linear_svm_classifier.sav'
 window_size = window_size()
-step = (3, 4)
-scale = (0.15, 0.2)
-classifier_prob_threshold = 0.9
-iou_threshold = 0.2
+step = (4, 5, 6)
+scale = (0.2, 0.25, 0.3) # 1280 x 720
+iou_threshold = 0.25
 classifier = pickle.load(open(classifier_path, 'rb'))
 downsampling_filter = lambda img:ndimg.gaussian_filter(img, sigma = 1, mode = 'nearest', truncate = 3)
 
@@ -76,7 +75,7 @@ def search(img, window_size = window_size, scale = scale, step = step, classifie
             for j in range(0, current_img.shape[1] - window_size[1], step[index]):
                 current_hog_descriptor = hog_descriptor(current_img[i:i + window_size[0], j:j + window_size[1]])
                 prob = classifier.predict_proba([current_hog_descriptor])[0]
-                if prob[1] > classifier_prob_threshold:
+                if prob[1] > prob[0]:
                     valid_blocks.append((prob[1], round(i / scale[index]), round(j / scale[index]), round(window_size[0] / scale[index]), round(window_size[1] / scale[index])), )
                     
     non_maximum_suppression(valid_blocks)
