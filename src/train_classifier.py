@@ -44,8 +44,8 @@ def format_image(img):
         img = tf.resize(img, (round(img.shape[0] * scale), round(img.shape[1] * scale)))
         start = ((img.shape[0] - img_size[0]) // 2, (img.shape[1] - img_size[1]) // 2)
         img = img[start[0]:start[0] + img_size[0], start[1]:start[1] + img_size[1]]
-        img -= min(img)
-        img /= max(img)
+        img -= np.min(img)
+        img /= np.max(img)
     return img
     
 def read_images(path_list):
