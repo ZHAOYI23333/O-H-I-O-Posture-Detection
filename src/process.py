@@ -36,8 +36,7 @@ if __name__ == '__main__':
 		print('Read a new frame:', count,end='\r')
 	Ims = np.array(Ims)
 
-	Tool.imshow(Ims[0])
-	blocks = search.search(Ims[0])
+	blocks = search.search(Ims[0])[:4]
 
 	fig,ax = plt.subplots(1)
 	ax.imshow(Ims[0])
@@ -47,4 +46,4 @@ if __name__ == '__main__':
 	    ax.add_patch(rect)
 	plt.title('Best_match')
 	plt.savefig('Best_match.png',dpi=300)
-	plt.show
+	plt.show()
