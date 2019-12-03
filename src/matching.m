@@ -1,12 +1,47 @@
 % generate_template.m
 
+
 for posture = ["O", "H", "I"]
     path = sprintf("../data/video/%s/P1/", posture);
-    generate_template(path, sprintf("../template/%s", posture), 4, 0.5);
+    generate_template(path, sprintf("../template/%s", posture), 10, 0.5);
 end
 
+score = [0 0];
+for posture = ["O", "H", "I"]
+    for i = 1:3
+        path = sprintf("../data/video/%s/P%d/", posture, i);
+        folder = dir(path + "*.mp4");
+        for k = 1: length(folder)
+            file_name = folder(k).name;
+            test = advanced_mhi(path + file_name, 10, 0.5);
+            res = lower(posture) == predict(test);
+            if ~res
+                disp(path + file_name);
+            end
+            score(res + 1) = score(res + 1) + 1;
+        end
+    end
+end
+precision = score(2)/sum(score);
+disp(precision)
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Helper function: Calculating Similitude
+%% Helper function
+
+function label = predict(test)
+
+    labels = ["o", "h", "i"];
+    score = [0 0 0];
+    
+    for i = 1:3
+        template = double(imread(sprintf("../template/%s.png", labels(i))))/255;
+        score(i) = compare(test, template);
+    end
+%     disp(score)
+    label = labels(score == min(score));
+     
+end
 
 
 function generate_template(path, output_name, T, forget_rate)
@@ -29,10 +64,11 @@ function generate_template(path, output_name, T, forget_rate)
         end
     end
     mhi = mhi / length(folder_o);
+    % Normalize the template to 0-1 if the maximum is not 1
+    mhi = mhi / max(mhi, [], "all") * 1;
     imwrite(mhi, output_name+".png")
     
 end
-
 
 function dist = compare(x,y)
     x = similitudeMoments(x);
@@ -40,9 +76,10 @@ function dist = compare(x,y)
     dist = sqrt(sum((x-y).^2, 'all'));
 end
 
+
+% Get mhi of a video stream. fileName: name of stream
+% Threshold difference by T, coefficient of forget rate fg (0-1).
 function mhi = advanced_mhi(fileName, T, fg)
-    % Get difference of im and im2 (absolute)
-    % Threshold difference by T, coefficient of forget rate fg (0-1).
     
     % default forget rate is 0.5
     if ~exist('fg','var')
@@ -97,4 +134,5 @@ function Nvals = similitudeMoments(im)
             Nvals = [Nvals, nij];
         end
     end
+%     Nvals = [Nvals(1) Nvals(5)];
 end
