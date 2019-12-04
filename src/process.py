@@ -134,6 +134,6 @@ if __name__ == '__main__':
 	#     Ims.append(image)
 	    success, image = videoCapture.read()
 	    count += 1
-	    print('Read a new frame:', count,end='\r')
+	    # print('Read a new frame:', count,end='\r')
 	# Ims = np.array(Ims)
 
