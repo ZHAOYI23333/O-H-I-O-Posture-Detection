@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 from train_classifier import window_size, hog_descriptor
 
 image_path = '../data/search_test.png'
-classifier_path = '../save/linear_svm_classifier.sav'
+classifier_path = '../save/nn_svm_classifier.sav'
 window_size = window_size()
-step = (4, 5, 6)
+step = (6, 8, 10)
 scale = (0.2, 0.25, 0.3) # 1280 x 720
 iou_threshold = 0.25
 classifier = pickle.load(open(classifier_path, 'rb'))
