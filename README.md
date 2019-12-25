@@ -5,3 +5,4 @@ Author: Yi Zhao, Yule Huang, Yunhao Zhang
 
 Dataset used: INRIA Person Dataset (http://pascal.inrialpes.fr/data/human/)
 
+![Sample Result](result_sample.png)
